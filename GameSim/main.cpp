@@ -34,14 +34,25 @@ int main()
 	SFMLRenderer r;
 
 	sf::Clock clock;
-	r.SetProjectionMatrix(Matrix4::Perspective(1, 100, 1.33f, 45.0f));
-	r.SetViewMatrix(Matrix4::BuildViewMatrix(Vector3(0, 0, 0), Vector3(0, 0, -10)));
+
+	r.SetProjectionMatrix(Matrix4::Perspective(1.0f, 1000.0f, 1.33f, 45.0f));
+	r.SetViewMatrix(Matrix4::BuildViewMatrix(Vector3(0, 0, 10), Vector3(0, 0, -10)));
 
 
 	PhysicsEngine pe;
-	Sphere s(Vector3(0, 0, 0), 5);
-	pe.addSphere(s);
+	Sphere *s1 = pe.addSphere(Vector3(1, 0, 0), 0.3f, 1, Vector3(0, 0, 0));
+	Sphere *s2 = pe.addSphere(Vector3(-1, 0, 0), 0.3f, 1, Vector3(0, 0, 0));
 
+	Plane *p1 = pe.addPlane(Vector3(2, 0, 0), 2);
+	Plane *p2 = pe.addPlane(Vector3(-2, 0, 0), 2);
+	Plane *p3 = pe.addPlane(Vector3(0, 2, 0), 2);
+	Plane *p4 = pe.addPlane(Vector3(0, -2, 0), 2);
+	Plane *p5 = pe.addPlane(Vector3(0, 0, 2), 2);
+	Plane *p6 = pe.addPlane(Vector3(0, 0, -2), 2);
+
+	s1->setVelocity(Vector3(-1, 0, 0), 0.0001f);
+	s2->setVelocity(Vector3(1, 0, 0), 0.0001f);
+	
 	while (window.isOpen()){
 
 		sf::Event event;
@@ -51,11 +62,11 @@ int main()
 				window.close();
 		}
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		sf::Int32 elapsed1 = clock.getElapsedTime().asMilliseconds();
 
 		pe.update(elapsed1);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pe.draw(r, elapsed1);
 
 		window.display();

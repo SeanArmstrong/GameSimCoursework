@@ -43,6 +43,11 @@ public:
 		}
 	}
 
+	Vector3 GetNormalised(){
+		Vector3 v = *this;
+		return v / v.Length();
+	}
+
 	void		ToZero() {
 		x = y = z = 0.0f;
 	}
@@ -63,6 +68,10 @@ public:
 
 	Vector3			Inverse() const{
 		return Vector3(-x,-y,-z);
+	}
+
+	Vector3			Reverse() const {
+		return Vector3(z, y, x);
 	}
 
 	static float	Dot(const Vector3 &a, const Vector3 &b) {

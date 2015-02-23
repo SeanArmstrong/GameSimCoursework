@@ -21,17 +21,6 @@ public:
 	GLuint	GetTexture()		const	{ return texture; }
 	void	SetTexture(GLuint tex)		{ texture = tex; }
 
-	GLuint	GetSmileyTexture()		const	{ 
-		return smileyTex;
-	}
-	void	SetSmileyTexture(GLuint tex)		{ smileyTex = tex; }
-
-	GLuint	GetStaticTexture()		const	{ return staticTex; }
-	void	SetStaticTexture(GLuint tex)		{ staticTex = tex; }
-
-	GLuint	GetBrickTexture()		const	{ return brickTex; }
-	void	SetBrickTexture(GLuint tex)		{ brickTex = tex; }
-
 	void	SetModelMatrix(Matrix4 mat) {modelMatrix = mat;}
 	Matrix4 GetModelMatrix()	const	{return modelMatrix;}
 
@@ -59,9 +48,6 @@ protected:
 	Shader*	shader;
 
 	GLuint texture;
-	GLuint smileyTex;
-	GLuint staticTex;
-	GLuint brickTex;
 
 	Matrix4 modelMatrix;
 	Matrix4 worldTransform;
