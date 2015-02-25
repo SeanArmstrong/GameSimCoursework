@@ -19,8 +19,6 @@ public:
 			(**it).update(msec);
 		}
 
-		rotatePlanes();
-
 		// Sort
 		sortSpheres();
 		
@@ -37,7 +35,7 @@ public:
 					break;
 				}
 				else if ((it != it2) && ((**it).isColliding((**it2)))){
-					//(**it).resolveCollisions((**it2), msec);
+					(**it).resolveCollisions((**it2), msec);
 				}
 			}
 		}
@@ -47,7 +45,6 @@ public:
 			if (!(**it).getRestState()){
 				for (itp = planes.begin(); itp < planes.end(); ++itp) {
 					if ((**it).isColliding((**itp))){
-						std::cout << "COLLIDING";
 						(**itp).resolveCollisions((**it), msec);
 					}
 				}
@@ -67,12 +64,14 @@ public:
 		}
 	}
 
+	
+	
 	Sphere* addSphere(const Vector3& pos = Vector3(0, 0, 0), const float& radius = 1.0f, float mass = 1.0f, Vector3 force = Vector3(0, 0, 0));
-	Plane* addPlane(Vector3& plane, Vector3 a, Vector3 b, Vector3 c, Vector3 d,  const float& distance);
+	Plane* addPlane(const Vector3& plane, const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d, const float& distance);
 	void sortSpheres();
 
 
-	void rotatePlanes();
+	void rotatePlanes(const Vector3& axis);
 	void applyGravity();
 	void applyUpwardsForce();
 	void removeUpwardsForce();
@@ -80,9 +79,8 @@ public:
 	void setDragSphereFactor(const float& drag);
 
 private:
-	std::vector<Sphere*> spheres;
 
-	// Change to array as we know the size
+	std::vector<Sphere*> spheres;
 	std::vector<Plane*> planes;
 };
 

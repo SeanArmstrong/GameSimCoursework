@@ -55,7 +55,7 @@ int main()
 	PhysicsEngine pe;
 	bool gravity = false;
 	bool upwardsForce = false;
-	float dragFactor = 0.5f;
+	bool drag = false;
 
 	/*Plane *p1 = pe.addPlane(Vector3(1, 0, 0), cubeSize);
 	Plane *p2 = pe.addPlane(Vector3(-1, 0, 0), cubeSize);
@@ -73,18 +73,18 @@ int main()
 
 
 	// Test Spheres
-	Sphere *s1 = pe.addSphere(Vector3(0, 0, 0), 10.0f, 1, Vector3(0, 0, 0));
-	//Sphere *s2 = pe.addSphere(Vector3(-10, 0, 0), 5.5f, 1, Vector3(0, 0, 0));
-	//Sphere *s3 = pe.addSphere(Vector3(0, -10, 0), 5.5f, 1, Vector3(0, 0, 0));
-	s1->setVelocity(Vector3(0, 1, 0), 0.01f);
-	//s2->setVelocity(Vector3(1, 0, 0), 0.01f);
-	//s3->setVelocity(Vector3(0, 1, 0), 0.01f);
+	/*Sphere *s1 = pe.addSphere(Vector3(10, 0, 0), 10.0f, 1, Vector3(0, 0, 0));
+	Sphere *s2 = pe.addSphere(Vector3(-10, 0, 0), 5.5f, 1, Vector3(0, 0, 0));
+	Sphere *s3 = pe.addSphere(Vector3(0, -10, 0), 5.5f, 1, Vector3(0, 0, 0));
+	s1->setVelocity(Vector3(-1, 0, 0), 0.01f);
+	s2->setVelocity(Vector3(1, 0, 0), 0.01f);
+	s3->setVelocity(Vector3(0, 1, 0), 0.01f);*/
 
-	/*for (int i = 0; i < NUMOFSPHERES; i++){
+	for (int i = 0; i < NUMOFSPHERES; i++){
 		Sphere* s = pe.addSphere(Vector3(randomFloat(-cubeSize, cubeSize), randomFloat(-cubeSize, cubeSize), randomFloat(-cubeSize, cubeSize)),
 			randomFloat(0.5f, 3.0f), 10);
 		s->setVelocity(Vector3(randomFloat(0.1f, maxStartingVelocity), randomFloat(0.1f, maxStartingVelocity), randomFloat(0.1f, maxStartingVelocity)), 1.0f);
-	}*/
+	}
 	
 	sf::Font font;
 	font.loadFromFile("assets/fonts/arial.ttf");
@@ -93,29 +93,16 @@ int main()
 	gravityText.setCharacterSize(10);
 	gravityText.setColor(sf::Color::White);
 	gravityText.setStyle(sf::Text::Regular);
-	pe.setDragSphereFactor(0.5f);
-	sf::Text dragText("Drag = 0.5", font);
+	sf::Text dragText("Drag - Off", font);
 	dragText.setCharacterSize(10);
 	dragText.setColor(sf::Color::White);
 	dragText.setStyle(sf::Text::Regular);
 	dragText.setPosition(sf::Vector2<float>(0.0f, 12.0f));
 
-
 	// http://gafferongames.com/game-physics/fix-your-timestep/
 	// Game timer needed
 
 	while (window.isOpen()){
-
-		if (upwardsForce == true){
-			if (gravity){
-				pe.applyGravity();
-			}
-			else{
-				pe.removeAcclerationFromAllSpheres();
-			}
-			upwardsForce = false;
-		}
-
 		sf::Event event;
 		while (window.pollEvent(event)){
 
@@ -135,9 +122,20 @@ int main()
 						gravity = true;
 					}
 				}
+				if (event.key.code == sf::Keyboard::P){
+					if (drag){
+						pe.setDragSphereFactor(1.0f);
+						dragText.setString("Drag - Off");
+						drag = false;
+					}
+					else {
+						pe.setDragSphereFactor(0.9995f);
+						dragText.setString("Drag - On");
+						drag = true;
+					}
+				}
 				else if (event.key.code == sf::Keyboard::F){
 					upwardsForce = true;
-					pe.applyUpwardsForce();
 				}
 				else if (event.key.code == sf::Keyboard::A){
 					viewMatrix = viewMatrix * Matrix4::Rotation(1.0f, Vector3(0, 1, 0));
@@ -152,28 +150,10 @@ int main()
 					viewMatrix = viewMatrix * Matrix4::Translation(Vector3(0, 0, -1));
 				}
 				else if (event.key.code == sf::Keyboard::L){
-					// Rotate cube around Z
+					pe.rotatePlanes(Vector3(0, 0, 1));
 				}
 				else if (event.key.code == sf::Keyboard::K){
-					// Rotate cube around X
-				}
-				else if (event.key.code == sf::Keyboard::Up){
-					if (dragFactor < 0.99f){
-						dragFactor = dragFactor + 0.01f;
-						pe.setDragSphereFactor(dragFactor);
-						std::stringstream string;
-						string << "Drag = " << dragFactor;
-						dragText.setString(string.str());
-					}
-				}
-				else if (event.key.code == sf::Keyboard::Down){
-					if (dragFactor > 0.01f){
-						dragFactor = dragFactor - 0.01f;
-						pe.setDragSphereFactor(dragFactor);
-						std::stringstream string;
-						string << "Drag = " << dragFactor;
-						dragText.setString(string.str());
-					}
+					pe.rotatePlanes(Vector3(1, 0, 0));
 				}
 			}
 		}
@@ -182,26 +162,36 @@ int main()
 		sf::Int32 elapsed1 = clock.getElapsedTime().asMilliseconds();
 
 		// only update at given fps
-		// at the moment its as much as possible
-		//if (elapsed1 > 1.0f / 60.0f){
+		if (elapsed1 > 1.0f / 60.0f){
+			if (upwardsForce == true){
+				pe.applyUpwardsForce();
+			}
 			pe.update(1.0f / 60.0f);
-			//clock.restart();
-		//}
+			clock.restart();
+			if (upwardsForce == true){
+				if (gravity){
+					pe.applyGravity();
+				}
+				else{
+					pe.removeAcclerationFromAllSpheres();
+				}
+				upwardsForce = false;
+			}
+		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		pe.draw(r, 1.0f / 60.0f);
 		
 		// Draw Helpers
-		
-		/*glBindBuffer(GL_ARRAY_BUFFER, 0);
+		// I don't like doing this
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		window.pushGLStates();
 		window.draw(gravityText);
 		window.draw(dragText);
-		window.popGLStates();*/
+		window.popGLStates();
 
 		window.display();
-		//clock.restart();
 	}
 
 	return 0;

@@ -1,10 +1,6 @@
 #include "Plane.h"
 
-Plane::Plane(){
-	// No
-}
-
-Plane::Plane(Vector3& plane, Vector3 a, Vector3 b, Vector3 c, Vector3 d, const float& distance){
+Plane::Plane(const Vector3& plane, const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d, const float& distance){
 	/*
 	Plane Ax + By + Cz + D = 0
 	(A, B, C) is Normal and D is distance
@@ -14,14 +10,11 @@ Plane::Plane(Vector3& plane, Vector3 a, Vector3 b, Vector3 c, Vector3 d, const f
 	Shader* s = new Shader("assets/shaders/basicvert.glsl", "assets/shaders/basicFrag.glsl");
 	ro = new RenderObject(m, s);
 
-	//normal = plane.GetNormalised();
+	normal = plane;
 	this->distance = distance;
 	this->elasticity = 0.5f;
 
-	// TODO: Test this model matrix
-	//ro->SetModelMatrix(Matrix4::Translation(normal * distance) * Matrix4::Rotation(90, normal.Reverse())
-	//	* Matrix4::Rotation(90, Vector3(1, 0, 0)) * Matrix4::Scale(Vector3(distance, distance, distance)));
-	ro->SetModelMatrix(Matrix4::Scale(Vector3(distance, distance, distance)));
+	ro->SetModelMatrix(Matrix4::Scale(Vector3(distance*2, distance*2, distance*2)));
 	ro->Update(0.0f);
 }
 
@@ -38,7 +31,6 @@ bool Plane::isColliding(const Sphere& s) const {
 	return ((Vector3::Dot(normal, s.getPosition()) + distance) < s.getRadius());
 }
 
-// TODO: Check distance
 void Plane::resolveCollisions(Sphere& s, const float msec){
 	// Get Data
 	float penetrationDistance = s.getRadius() - (Vector3::Dot(normal, s.getPosition()) + distance);

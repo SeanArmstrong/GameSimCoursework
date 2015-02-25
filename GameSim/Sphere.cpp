@@ -14,7 +14,7 @@ Sphere::Sphere(const Vector3& pos, const float& radius, float mass, Vector3 forc
 	this->acceleration = force / mass;
 	this->radius = radius;
 	this->elasticity = 1;
-	this->dragFactor = 0.1;
+	this->dragFactor = 1.0f;
 	this->atRest = false;
 	
 
@@ -57,7 +57,7 @@ void Sphere::resolveCollisions(Sphere& s, const float msec){
 	float vN = Vector3::Dot((vA - vB), normal);
 
 	// Elasiticity of collision is average of two colliding spheres
-	float E = (this->elasticity + s.elasticity) * 0.5;
+	float E = (this->elasticity + s.elasticity) * 0.5f;
 
 	// Impulse = -(1+E)Vab dot N / N dot (normal(1/ma + 1/mb))
 	float impulse = (-(1 + E) * vN) / Vector3::Dot(normal, normal * (this->oneovermass + s.oneovermass));

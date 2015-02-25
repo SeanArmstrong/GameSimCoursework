@@ -19,11 +19,10 @@ public:
 	// Getters
 	inline Vector3	getPosition() const { return position; }
 	inline Vector3	getPreviousPosition() const { return previousPosition; }
-	inline float	getX() const { return position.x; }
-	inline float	getY() const { return position.y; }
-	inline float	getZ() const { return position.z; }
+
 	inline float	getSmallestXPoint() const { return position.x - radius; }
 	inline float	getLargestXPoint() const { return position.x + radius; }
+
 	inline RenderObject* getRenderObject() const { return ro; }
 	
 	inline float getMass() const { return mass; }
@@ -61,7 +60,7 @@ public:
 	inline void update(const float& msec){
 		if (!atRest){
 			Vector3 temp = position;
-			position += (position - previousPosition) + (acceleration * msec * msec);// *dragFactor;
+			position += ((position - previousPosition) + (acceleration * msec * msec)) * dragFactor;
 			previousPosition = temp;
 			checkRestState(msec);
 		}
@@ -74,7 +73,6 @@ public:
 	}
 
 	inline void draw(SFMLRenderer& renderer, const float& msec) const {
-		// Need to update model matrix of render object?
 		ro->SetModelMatrix(Matrix4::Translation(position) * Matrix4::Scale(Vector3(radius, radius, radius)));
 		ro->Update(msec);
 		renderer.Render(*ro);
@@ -86,11 +84,13 @@ private:
 	Vector3		position;
 	Vector3		previousPosition;
 	Vector3		acceleration;
+
 	float		mass;
 	float		oneovermass;
 	float		radius;
 	float		elasticity;
 	float		dragFactor;
+
 	bool		atRest;
 
 
