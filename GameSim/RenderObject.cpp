@@ -57,7 +57,7 @@ void RenderObject::Draw() const {
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glUniform1i(glGetUniformLocation(program, "texture"), GL_TEXTURE0);
+		glUniform1i(glGetUniformLocation(program, "brick"), GL_TEXTURE0);
 
 		mesh->Draw();
 	}

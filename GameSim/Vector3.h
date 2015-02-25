@@ -48,12 +48,24 @@ public:
 		return v / v.Length();
 	}
 
+	Vector3 unitVector(){
+		Vector3 newVector;
+		float magnitude = this->Length();
+		newVector.x = this->x / magnitude;
+		newVector.y = this->y / magnitude;
+		newVector.z = this->z / magnitude;
+		return newVector;
+	}
+
 	void		ToZero() {
 		x = y = z = 0.0f;
 	}
 
 	float			Length() const {
 		return sqrt((x*x)+(y*y)+(z*z));	
+	}
+	float			SquaredLength() const {
+		return (x*x) + (y*y) + (z*z);
 	}
 
 	void			Invert() {

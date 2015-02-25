@@ -3,6 +3,9 @@
 #include <vector>
 #include "Sphere.h"
 #include "Plane.h"
+#include "Quaternion.h"
+#include <iostream>
+
 
 class PhysicsEngine
 {
@@ -15,22 +18,38 @@ public:
 		for (it = spheres.begin(); it < spheres.end(); ++it) {
 			(**it).update(msec);
 		}
+
+		rotatePlanes();
+
+		// Sort
+		sortSpheres();
 		
 		for (it = spheres.begin(); it < spheres.end(); ++it) {
 			std::vector<Sphere*>::iterator it2;
-			for (it2 = spheres.begin(); it2 < spheres.end(); ++it2) {
-				if ((it != it2) && ((**it).isColliding((**it2)))){
-					//std::cout << "Collision occuring";
-					//Resolve Collision
+			for (it2 = it + 1; it2 < spheres.end(); ++it2) {
+				if ((**it2).getSmallestXPoint() >= (**it).getLargestXPoint()){
+					// Sweep
+					// Smallest points are sorted smallest to largest in the x axis 
+					// so if the next element you are checking point is larger
+					// than the largest x point of first sphere. It has not collided
+					// and nor will anyother spheres after this one
+					// so you can break
+					break;
+				}
+				else if ((it != it2) && ((**it).isColliding((**it2)))){
+					//(**it).resolveCollisions((**it2), msec);
 				}
 			}
 		}
 
 		for (it = spheres.begin(); it < spheres.end(); ++it) {
 			std::vector<Plane*>::iterator itp;
-			for (itp = planes.begin(); itp < planes.end(); ++itp) {
-				if ((**it).isColliding((**itp))){
-					//std::cout << "Plane COL";
+			if (!(**it).getRestState()){
+				for (itp = planes.begin(); itp < planes.end(); ++itp) {
+					if ((**it).isColliding((**itp))){
+						std::cout << "COLLIDING";
+						(**itp).resolveCollisions((**it), msec);
+					}
 				}
 			}
 		}
@@ -49,7 +68,16 @@ public:
 	}
 
 	Sphere* addSphere(const Vector3& pos = Vector3(0, 0, 0), const float& radius = 1.0f, float mass = 1.0f, Vector3 force = Vector3(0, 0, 0));
-	Plane* addPlane(Vector3& plane, const float& distance);
+	Plane* addPlane(Vector3& plane, Vector3 a, Vector3 b, Vector3 c, Vector3 d,  const float& distance);
+	void sortSpheres();
+
+
+	void rotatePlanes();
+	void applyGravity();
+	void applyUpwardsForce();
+	void removeUpwardsForce();
+	void removeAcclerationFromAllSpheres();
+	void setDragSphereFactor(const float& drag);
 
 private:
 	std::vector<Sphere*> spheres;

@@ -102,9 +102,25 @@ Mesh* Mesh::GenerateTriangle()	{
 	return m;
 }
 
+Mesh* Mesh::GenerateQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d) {
+	Mesh*m = new Mesh();
+	m->type = GL_LINE_LOOP;
+	m->numVertices = 4;
+
+	m->vertices = new Vector3[m->numVertices];
+	m->vertices[0] = a;
+	m->vertices[1] = b;
+	m->vertices[2] = c;
+	m->vertices[3] = d;
+
+	m->BufferData();
+
+	return m;
+}
+
 Mesh* Mesh::GenerateQuad() {
 	Mesh*m = new Mesh();
-	m->type = GL_LINE_STRIP;
+	m->type = GL_LINE_LOOP;
 	m->numVertices = 6;
 
 	m->vertices = new Vector3[m->numVertices];
