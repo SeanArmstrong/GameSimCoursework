@@ -52,7 +52,7 @@ void Sphere::resolveCollisions(Sphere& s, const float msec){
 	Vector3 vA = this->getVelocity(msec);
 	Vector3 vB = s.getVelocity(msec);
 
-	// Vab = Va + Vb
+	// Vab = Va - Vb
 	// Vn = Vab dot N
 	float vN = Vector3::Dot((vA - vB), normal);
 

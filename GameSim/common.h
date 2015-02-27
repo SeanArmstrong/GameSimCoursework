@@ -23,6 +23,10 @@ static inline double RadToDeg(const double deg)	{
 	return deg * 180.0 / PI;
 };
 
+static inline float XOR(const float left, const float right){
+	return !left != !right;
+}
+
 //Degrees to radians
 static inline double DegToRad(const double rad)	{
 	return rad * PI / 180.0;

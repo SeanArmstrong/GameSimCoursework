@@ -13,14 +13,23 @@ public:
 	PhysicsEngine();
 	~PhysicsEngine();
 
+	/*
+	* Updates position of spheres and sorts them.
+	* Then it checks for collisions with spheres and 
+	* with planes. if there is a collison it will resolve it
+	*/
 	inline void update(const float& msec){
 		std::vector<Sphere*>::iterator it;
 		for (it = spheres.begin(); it < spheres.end(); ++it) {
 			(**it).update(msec);
 		}
 
-		// Sort
 		sortSpheres();
+
+		std::vector<Plane*>::const_iterator ip;
+		for (ip = planes.begin(); ip < planes.end(); ++ip) {
+			(**ip).update(msec);
+		}
 		
 		for (it = spheres.begin(); it < spheres.end(); ++it) {
 			std::vector<Sphere*>::iterator it2;
@@ -42,7 +51,7 @@ public:
 
 		for (it = spheres.begin(); it < spheres.end(); ++it) {
 			std::vector<Plane*>::iterator itp;
-			if (!(**it).getRestState()){
+			if (!(**it).getRestState()){ // Don't check sphers if they are at rest
 				for (itp = planes.begin(); itp < planes.end(); ++itp) {
 					if ((**it).isColliding((**itp))){
 						(**itp).resolveCollisions((**it), msec);
@@ -52,6 +61,9 @@ public:
 		}
 	}
 
+	/*
+	* Called every frame to draw spheres and planes
+	*/
 	inline void draw(SFMLRenderer& renderer, const float& msec)const {
 		std::vector<Sphere*>::const_iterator is;
 		for (is = spheres.begin(); is < spheres.end(); ++is) {
@@ -64,8 +76,6 @@ public:
 		}
 	}
 
-	
-	
 	Sphere* addSphere(const Vector3& pos = Vector3(0, 0, 0), const float& radius = 1.0f, float mass = 1.0f, Vector3 force = Vector3(0, 0, 0));
 	Plane* addPlane(const Vector3& plane, const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d, const float& distance);
 	void sortSpheres();
@@ -77,6 +87,7 @@ public:
 	void removeUpwardsForce();
 	void removeAcclerationFromAllSpheres();
 	void setDragSphereFactor(const float& drag);
+	void setPlaneRotation(const Vector3& axis);
 
 private:
 

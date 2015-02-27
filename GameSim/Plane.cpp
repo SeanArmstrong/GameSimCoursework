@@ -13,6 +13,8 @@ Plane::Plane(const Vector3& plane, const Vector3& a, const Vector3& b, const Vec
 	normal = plane;
 	this->distance = distance;
 	this->elasticity = 0.5f;
+	this->rotatingAxis = Vector3(1, 0, 1);
+	this->rotating = false;
 
 	ro->SetModelMatrix(Matrix4::Scale(Vector3(distance*2, distance*2, distance*2)));
 	ro->Update(0.0f);
@@ -28,7 +30,7 @@ bool Plane::isColliding(const Sphere& s) const {
 	// N is normal of plane
 	// S is position of center of sphere
 	// d is distance 
-	return ((Vector3::Dot(normal, s.getPosition()) + distance) < s.getRadius());
+	return ((Vector3::Dot(normal, s.getPosition()) + distance) <= s.getRadius());
 }
 
 void Plane::resolveCollisions(Sphere& s, const float msec){
@@ -56,4 +58,9 @@ void Plane::resolveCollisions(Sphere& s, const float msec){
 
 	// Set new velocity of sphere
 	s.setVelocity(vS + (normal * impulse * s.getOneOverMass()), msec);
+}
+
+void Plane::setRotatingAxis(const Vector3& axis) {
+	rotatingAxis = Vector3(XOR(rotatingAxis.x, axis.x), XOR(rotatingAxis.y, axis.y), XOR(rotatingAxis.z, axis.z));
+	rotating = !(rotatingAxis == Vector3(0, 0, 0));
 }
