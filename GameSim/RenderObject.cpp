@@ -29,6 +29,7 @@ void RenderObject::Intialize(Mesh*m, Shader*s, GLuint t) {
 RenderObject::~RenderObject(void)
 {
 	glDeleteTextures(1, &texture);
+	delete shader;
 }
 
 

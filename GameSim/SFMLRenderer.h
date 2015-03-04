@@ -1,9 +1,11 @@
+/*
+* Author: Sean Armstrong
+* Adapted from NCLGL Renderer and OGLRenderer to use SFML
+*/
+
 #pragma once
 #include "RenderObject.h"
 
-/*
-* Adapted from NCLGL Renderer and OGLRenderer to use SFML
-*/
 class SFMLRenderer
 {
 public:

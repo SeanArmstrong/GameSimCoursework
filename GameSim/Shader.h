@@ -6,13 +6,7 @@ Description:VERY simple class to encapsulate GLSL shader loading, linking,
 and binding. Useful additions to this class would be overloaded functions to
 replace the glUniformxx functions in external code, and possibly a map to store
 uniform names and their resulting bindings. 
-
--_-_-_-_-_-_-_,------,   
-_-_-_-_-_-_-_-|   /\_/\   NYANYANYAN
--_-_-_-_-_-_-~|__( ^ .^) /
-_-_-_-_-_-_-_-""  ""   
-
-*//////////////////////////////////////////////////////////////////////////////
+*/
 
 #pragma once
 

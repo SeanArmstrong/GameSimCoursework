@@ -16,9 +16,100 @@ PhysicsEngine::~PhysicsEngine(){
 	}
 }
 
+
+
+/* Updating */
+
+/*
+* Updates position of spheres and sorts them.
+* Then it checks for collisions with spheres and
+* with planes. if there is a collison it will resolve it
+*/
+void PhysicsEngine::update(const float& msec){
+	int restingSpheres = 0;
+
+	// Update all spheres that are not at rest
+	std::vector<Sphere*>::iterator it;
+	for (it = spheres.begin(); it < spheres.end(); ++it) {
+		if (!(**it).getRestState()){
+			(**it).update(msec);
+		}
+		else{
+			restingSpheres++;
+		}
+	}
+
+	if (restingSpheres > 0){
+		std::cout << "Resting Spheres: " << restingSpheres << std::endl;
+	}
+
+	// Sort the spheres by their smallest x point
+	sortSpheres();
+
+	// Update all planes
+	std::vector<Plane*>::const_iterator ip;
+	for (ip = planes.begin(); ip < planes.end(); ++ip) {
+		(**ip).update(msec);
+	}
+
+	// Find collisions between spheres
+	for (it = spheres.begin(); it < spheres.end(); ++it) {
+		std::vector<Sphere*>::iterator it2;
+		for (it2 = it + 1; it2 < spheres.end(); ++it2) {
+			if ((**it2).getSmallestXPoint() >= (**it).getLargestXPoint()){
+				// Sweep
+				// Smallest points are sorted smallest to largest in the x axis 
+				// so if the next element you are checking point is larger
+				// than the largest x point of first sphere. It has not collided
+				// and nor will anyother spheres after this one
+				// so you can break
+				break;
+			}
+			else if ((it != it2) && ((**it).isColliding((**it2)))){
+				// resolve collisions
+				(**it).resolveCollisions((**it2), msec);
+			}
+		}
+	}
+
+	// Find collisions between spheres and planes
+	for (it = spheres.begin(); it < spheres.end(); ++it) {
+		std::vector<Plane*>::iterator itp;
+		for (itp = planes.begin(); itp < planes.end(); ++itp) {
+			if ((**it).isColliding((**itp))){
+				(**itp).resolveCollisions((**it), msec);
+			}
+		}
+	}
+}
+/* End Updating */
+
+
+
+
+/* Drawing */
+
+/*
+* Called every frame to draw spheres and planes
+*/
+void PhysicsEngine::draw(SFMLRenderer& renderer, const float& msec) const {
+	std::vector<Sphere*>::const_iterator is;
+	for (is = spheres.begin(); is < spheres.end(); ++is) {
+		(**is).draw(renderer, msec);
+	}
+
+	std::vector<Plane*>::const_iterator ip;
+	for (ip = planes.begin(); ip < planes.end(); ++ip) {
+		(**ip).draw(renderer);
+	}
+}
+
+/* End Drawing */
+
 /*
 * Creates a sphere and adds it to a vector spheres
 * params are starting position, radius, mass and force
+* sorts when added
 */
 Sphere* PhysicsEngine::addSphere(const Vector3& pos, const float& radius, float mass, Vector3 force){
 	Sphere* s = new Sphere(pos, radius, mass, force);
@@ -61,37 +152,14 @@ void PhysicsEngine::sortSpheres(){
 }
 
 /*
-* Rotates the planes around a given axis and updates
-* the model matrix of each.
-*/
-void PhysicsEngine::rotatePlanes(const Vector3& axis){
-	std::vector<Plane*>::const_iterator ip;
-	for (ip = planes.begin(); ip < planes.end(); ++ip) {
-		Vector3 norm = (**ip).getNormal();
-		Vector3 unitVector = norm.unitVector();
-		Quaternion quat = Quaternion::AxisAngleToQuaterion(axis, 2.0f);
-
-		Matrix4 mat = quat.ToMatrix();
-
-		Vector3 resultnorm = mat * unitVector;
-
-		float distance = (**ip).getDistance();
-		(**ip).setNormal(resultnorm);
-
-		(**ip).getRenderObject()->SetModelMatrix((**ip).getRenderObject()->GetModelMatrix() * mat);
-		(**ip).getRenderObject()->Update(0.0f);
-		
-	}
-}
-
-/*
 * Applies gravity at -9.81m/s
 * Times by mass so the force is independent of mass
 */
 void PhysicsEngine::applyGravity(){
 	std::vector<Sphere*>::iterator it;
 	for (it = spheres.begin(); it < spheres.end(); ++it) {
-		(**it).applyNewForce(Vector3(0, -9.81f * (**it).getMass(), 0));
+		(**it).setRestState(false);
+		(**it).applyGravity(true);
 	}
 }
 
@@ -101,7 +169,18 @@ void PhysicsEngine::applyGravity(){
 void  PhysicsEngine::applyUpwardsForce(){
 	std::vector<Sphere*>::iterator it;
 	for (it = spheres.begin(); it < spheres.end(); ++it) {
+		(**it).setRestState(false);
 		(**it).applyNewForce(Vector3(0, 30000.0f, 0));
+	}
+}
+
+/* 
+* Removes gravity from all spheres
+*/
+void PhysicsEngine::removeGravity(){
+	std::vector<Sphere*>::iterator it;
+	for (it = spheres.begin(); it < spheres.end(); ++it) {
+		(**it).applyGravity(false);
 	}
 }
 
@@ -123,16 +202,5 @@ void PhysicsEngine::setDragSphereFactor(const float& drag){
 	std::vector<Sphere*>::iterator it;
 	for (it = spheres.begin(); it < spheres.end(); ++it) {
 		(**it).setDragFactor(drag);
-	}
-}
-
-/*
-* Calls the setRotatingAxis for every plane with 
-* the axis param
-*/
-void PhysicsEngine::setPlaneRotation(const Vector3& axis){
-	std::vector<Plane*>::const_iterator ip;
-	for (ip = planes.begin(); ip < planes.end(); ++ip) {
-		(**ip).setRotatingAxis(axis);
 	}
 }
