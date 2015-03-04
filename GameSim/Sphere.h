@@ -1,3 +1,10 @@
+/*
+* Author: Sean Armstrong
+* Class to contain the physical and rendering object of
+* a sphere defined by its radius and mass
+*/
+
+
 #pragma once
 
 #include "Vector3.h"
@@ -16,74 +23,60 @@ public:
 	Sphere(const Vector3& pos, const float& radius, float mass = 10, Vector3 force = Vector3(0, 0, 0));
 	~Sphere();
 
-	// Getters
-	inline Vector3	getPosition() const { return position; }
-	inline Vector3	getPreviousPosition() const { return previousPosition; }
+	/* Updating */
+	void update(const float& msec);
+	void checkRestState(const float& msec);
+	/* End Updating */
 
-	inline float	getSmallestXPoint() const { return position.x - radius; }
-	inline float	getLargestXPoint() const { return position.x + radius; }
+	/* Drawing */
+	void draw(SFMLRenderer& renderer, const float& msec) const;
+	/* END Drawing */
 
-	inline RenderObject* getRenderObject() const { return ro; }
-	
-	inline float getMass() const { return mass; }
-	inline float getOneOverMass() const { return oneovermass; }
-	inline Vector3 getAcceleration() const { return acceleration; }
-
-	inline float getRadius() const { return radius; }
-	inline float getElasticity() const { return elasticity; }
-	inline float getRestState() const { return atRest; }
+	/* Getters */
+	inline Vector3			getPosition()		  const { return position; }
+	inline Vector3			getPreviousPosition() const { return previousPosition; }
+	inline float			getSmallestXPoint()   const { return position.x - radius; }
+	inline float			getLargestXPoint()	  const { return position.x + radius; }											  
+	inline RenderObject*	getRenderObject()	  const { return ro; }											  
+	inline float			getMass()			  const { return mass; }
+	inline float			getOneOverMass()	  const { return oneovermass; }
+	inline float			getRadius()			  const { return radius; }									  
+	inline float			getElasticity()		  const { return elasticity; }
+	inline float			getRestState()		  const { return atRest; }
+	inline Vector3			getAcceleration()	  const { return acceleration; }
+	inline Vector3			getGravity()		  const { return gravity; }
 
 	// speed = distance / time 
 	inline Vector3 getVelocity(const float& time) const { 
 		return (position - previousPosition) / time;
 	}
+	/* END Getters */
 
-	// Setters
-	inline void applyNewForce(Vector3& force){
-		acceleration = force / mass;
-	}
+
+	/* Setters */
 	inline void setVelocity(const Vector3& velocity, const float& time){
 		this->previousPosition = position - (velocity * time);
 	}
-	inline void moveBy(const Vector3& d){
-		position = position + d;
-		previousPosition = previousPosition + d;
-	}
-	
+
+	void applyNewForce(Vector3& force);
+	void applyGravity(bool status);
+	void moveBy(const Vector3& d);
+	void setRestState(bool state);
 	void setDragFactor(const float& drag);
+	/* END Setters */
 
-	// Sphere Sphere Collision
+
+	/* Collisions */
 	bool isColliding(const Sphere& s) const;
-	// Sphere Plane Collision
 	bool isColliding(const Plane& p) const;
-
-	inline void update(const float& msec){
-		if (!atRest){
-			Vector3 temp = position;
-			position += ((position - previousPosition) + (acceleration * msec * msec)) * dragFactor;
-			previousPosition = temp;
-			checkRestState(msec);
-		}
-	}
-
-	inline void checkRestState(const float& msec){
-		if (getVelocity(msec).SquaredLength() < 0.00001f && acceleration.SquaredLength() == 0.0f){
-			atRest = true;
-		}
-	}
-
-	inline void draw(SFMLRenderer& renderer, const float& msec) const {
-		ro->SetModelMatrix(Matrix4::Translation(position) * Matrix4::Scale(Vector3(radius, radius, radius)));
-		ro->Update(msec);
-		renderer.Render(*ro);
-	}
-
 	void resolveCollisions(Sphere& s, const float msec);
+	/* Collisions */
 
 private:
 	Vector3		position;
 	Vector3		previousPosition;
 	Vector3		acceleration;
+	Vector3		gravity;
 
 	float		mass;
 	float		oneovermass;
@@ -91,6 +84,8 @@ private:
 	float		elasticity;
 	float		dragFactor;
 
+	int			framesAtRest;
+	float		averageDistance;
 	bool		atRest;
 
 

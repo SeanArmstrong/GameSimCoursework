@@ -1,13 +1,8 @@
 /******************************************************************************
 Class:Matrix4
-Implements:
 Author:Rich Davison
-Description:VERY simple 4 by 4 matrix class. Students are encouraged to modify 
-this as necessary! Overloading the [] operator to allow acces to the values
-array in a neater way might be a good start, as the floats that make the matrix 
-up are currently public.
+*/
 
-*//////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include <iostream>

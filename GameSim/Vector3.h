@@ -1,16 +1,10 @@
 #pragma once
 /*
 Class:Vector3
-Implements:
 Author:Rich Davison
-Description:VERY simple Vector3 class. Students are encouraged to modify this as necessary!
-
--_-_-_-_-_-_-_,------,   
-_-_-_-_-_-_-_-|   /\_/\   NYANYANYAN
--_-_-_-_-_-_-~|__( ^ .^) /
-_-_-_-_-_-_-_-""  ""   
-
+Edited by : Sean Armstrong
 */
+
 #include <cmath>
 #include <iostream>
 

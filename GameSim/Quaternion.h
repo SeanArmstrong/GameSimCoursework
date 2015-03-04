@@ -1,15 +1,7 @@
 /******************************************************************************
 Class:Quaternion
-Implements:
 Author:Rich Davison
-Description:VERY simple Quaternion class. Students are encouraged to modify 
-this as necessary...if they dare.
-
-Quaternions aren't really discussed much in the graphics module, but the 
-MD5Mesh class uses them internally, as MD5 files store their rotations
-as quaternions.
-
-*//////////////////////////////////////////////////////////////////////////////
+*/
 
 #pragma once
 

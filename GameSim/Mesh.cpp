@@ -358,4 +358,5 @@ void	Mesh::BufferData()	{
 	//Once we're done with the vertex buffer binding, we can unbind the VAO,
 	//ready to reapply later, such as in the Draw function above!
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

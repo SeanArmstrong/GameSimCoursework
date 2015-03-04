@@ -1,3 +1,8 @@
+/******************************************************************************
+Class:Matrix4
+Author:Rich Davison
+*/
+
 #pragma once
 #include "Matrix4.h"
 

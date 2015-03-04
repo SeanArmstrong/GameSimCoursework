@@ -1,20 +1,7 @@
 /******************************************************************************
 Class:Mesh
-Implements:
 Author:Rich Davison	<richard.davison4@newcastle.ac.uk>
-Description:Wrapper around OpenGL primitives, geometry and related 
-OGL functions.
-
-There's a couple of extra functions in here that you didn't get in the tutorial
-series, to draw debug normals and tangents. 
-
-
--_-_-_-_-_-_-_,------,   
-_-_-_-_-_-_-_-|   /\_/\   NYANYANYAN
--_-_-_-_-_-_-~|__( ^ .^) /
-_-_-_-_-_-_-_-""  ""   
-
-*//////////////////////////////////////////////////////////////////////////////
+*/
 
 #pragma once
 
